@@ -1,0 +1,174 @@
+---
+title: "Predicting Exam Scores"
+format: html
+---
+
+
+## Overview
+As I head into finals this week, I wanted to look into the factors that impact college students' success on exams. I first want to visualize metrics that I think would have a significant impact on a students exam score to start understanding variable signficance. From there, I would like to quantify their relationships through the means of an OLS model. Finally, I want to see if I can predict a students exam score using Random Forrest Regression. 
+
+Through this analysis I hope to understand:
+
+1. What factors most strongly influence a students exam performance, and therefore what should I prioritize this week?
+
+2. Can we predict exam score based off the available data?
+
+## Purpose
+Understanding which variables influence exam performance can help students prioritize specific behaviors when aiming for educational success. For example, if tutoring is not strongly associated with higher exam scores, students may choose prioritize attendance or sleep to improve their performance. Additionally, accurately being able to predict exam score performance could be immensely useful to professors. If they calculate that a student should earn a 90 but they recieve a 65, there may have been an error when grading or they can speak to the student to understand if something went wrong. 
+
+## The Data
+
+The data I used for the project includes a variety of information about students, their education, and behaviors. Variables included are both numeric and categorical. Some metrics of importance include hours studied, attendance hours, resource availability, and family income.
+
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
+
+```{python}
+data = pd.read_csv("/Users/maddypitman/Downloads/StudentPerformanceFactors.csv")
+data.head()
+```
+
+## Exploring the Data: What factors seem to be most closely related to exam perfromance?
+
+```{python}
+plt.scatter(data['Hours_Studied'], data['Exam_Score'])
+plt.show()
+```
+
+I plotted a scatterplot to analyze the relationship between the hours a student studied and their exam score. This is the best choice to evaluate strength and direction of two continuous variables. 
+
+I would think study hours would be one of the greatest predictors of exam success. While there is a general upward trend, there are also many outliers that seem to do well regardless of their study time. This can likely be attributed to natural ability.
+
+```{python}
+plt.figure(figsize=(6,4))
+sns.boxplot(data=data, x='School_Type', y='Exam_Score')
+plt.xlabel('School Type')
+plt.ylabel('Exam Score')
+plt.title('Exam Score Distribution: Public vs Private Schools')
+plt.show()
+```
+
+Next, I wanted to compare the spread of exam scores by private and public schools. A boxplot using matplotlib was the most clear way to accomplish this. 
+
+Exam scores to not appear to differ tremendously by Education Type. The average score for both education types is around a 68. Both school types also have outliers with similar ranges. This could be an interesting factor to consider when looking at tuition costs and evaluating differences in quality of eduction. 
+
+```{python}
+plt.scatter(data['Attendance'], data['Exam_Score'])
+plt.show()
+```
+
+Attendance seems like it would also help predict a students exam score. To explore the relationship a a scatterplot was the right choice for the continuous variables.
+
+Attendance has a similar relationship to exam scores as study hours. There is an upward trend present, however, there are a fair amount of students that perfrom well regardless of the hours of school they attend.
+
+```{python}
+plt.figure(figsize=(6,4))
+sns.boxplot(data=data, x='Sleep_Hours', y='Exam_Score')
+plt.xlabel('Houes of Sleep')
+plt.ylabel('Exam Score')
+plt.title('Exam Score Distribution: Sleep Hours')
+plt.show()
+```
+
+Finally, I wanted to see if exam scores differ for student who get different amounts of sleep. Since sleep is categorical in the sense that there are only a few options, it made sense to use a boxplot. 
+
+Different hours of sleep do not impact scores obtained by students. The average scores and spreads are no differnt across differnt amounts of sleep. Normally I prioritize going to sleep extremely early if I have an exam the next day but this data  suggests that may not be the best tactic.
+
+## Modeling 
+
+I will be using OLS from statsmodels.formula.api to quantify the relationship between the predictive variables and exam score. 
+
+```{python}
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+```
+
+```{python}
+model = smf.ols("Exam_Score ~ Hours_Studied + Attendance", data=data).fit()
+print(model.summary())
+```
+
+Based off the available variables, hours studied and attendance seem like they would have the strongest corelation to exam scores. After making a model with only these variables, we see that the explained variation in exam score is 54.1%. Both variables are significant and have a positive impact on exam score. 
+
+It is estimated that for each hour studied, a students exam score will increase by 0.29. 
+For each additional hour in class, a students score rises by 0.19 on average.
+
+```{python}
+model = smf.ols("Exam_Score ~ Hours_Studied + Attendance + Tutoring_Sessions + Previous_Scores + C(Gender)", data=data).fit()
+print(model.summary())
+```
+
+Adding more seemingly strong predictors, the R squared only increased by 5%. This suggests the addition of gender, tutoring, and previous scores does not improve the model tremendously. 
+
+We do get one negative coefficient for being male, suggesting that men score lower than women on average. However, this is not statistically significant. 
+
+```{python}
+model = smf.ols(
+    "Exam_Score ~ Hours_Studied + Attendance + Parental_Involvement + "
+    "Access_to_Resources + Extracurricular_Activities + Sleep_Hours + "
+    "Previous_Scores + Motivation_Level + Internet_Access + Tutoring_Sessions + "
+    "Family_Income + Teacher_Quality + C(School_Type) + Peer_Influence + "
+    "Physical_Activity + C(Learning_Disabilities) + C(Parental_Education_Level) + "
+    "Distance_from_Home + C(Gender)",
+    data=data
+).fit()
+
+print(model.summary())
+```
+
+Using all the variables in the dataset has the highest R squared of the models created thus far. 72.2% of variation in exam scores can be explained when including all of the available variables. Only a few variables are not regarded as statistically significant and these include medium teacher quality, being male, and sleep hours. 
+
+The metric with the greatest quantitative impact on exam score is low access to resources. Students with low access to resources are expected to score 2 points lower than a student with all other similar conditions. The second greatest impact is positive peer influence. This suggests that students in a supportive student environment tend to score 1 point higher on the exam than students who are not in a positive environment. This is an interesting way to see how the energy and mindset of those around you impact your success.
+
+## Predicting Exam Score
+
+I am using Random Forrest Regression to predict a students exam score based on the data. Since there are a number of categorical variables I used get_dummies to convert them into usable categical numbers. Further, I broke the data into a train and test set to fit a model to the training data then evaluate its performance on the test data. Finally, I computed performance metrics to understand how well the model does. 
+
+```{python}
+df = pd.get_dummies(data, drop_first=True)
+
+X = df.drop("Exam_Score", axis=1)
+y = df["Exam_Score"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+rf = RandomForestRegressor(n_estimators=500, random_state=42)
+rf.fit(X_train, y_train)
+
+preds = rf.predict(X_test)
+
+rmse = mean_squared_error(y_test, preds, squared=False)
+mae = mean_absolute_error(y_test, preds)
+r2 = r2_score(y_test, preds)
+
+print("RMSE:", rmse)
+print("MAE:", mae)
+print("R²:", r2)
+```
+
+```{python}
+plt.figure(figsize=(6,6))
+plt.scatter(y_test, preds, alpha=0.6)
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], '--')
+plt.xlabel("Actual Exam Score")
+plt.ylabel("Predicted Exam Score")
+plt.title("Actual vs Predicted Exam Scores")
+plt.show()
+```
+
+
+The models performance is moderately strong in its ability to predict exam scores. The RMSE expresses that the models predictions on average differ from the true score by 2.2 points. This is a very small margin.
+
+The R square reflects that 64.9% of variation in exam scores can be explained by the model. This is a good score but could be stronger. 
+
+Overall, this model does a decent job predicting exam score. It would be interesting to see how adding variables like previous experience in the subject or motivation impact scores. Motivation could be measured by: whether or not the student is trying to find a job, whether they plan on pursuing a career in that subject, etc. 
+
