@@ -172,3 +172,9 @@ The R square reflects that 64.9% of variation in exam scores can be explained by
 
 Overall, this model does a decent job predicting exam score. It would be interesting to see how adding variables like previous experience in the subject or motivation impact scores. Motivation could be measured by: whether or not the student is trying to find a job, whether they plan on pursuing a career in that subject, etc. 
 
+## Takeaways
+
+After performing both linear regression and predictive modeling, we can see that most variables available in the dataset have a significant effect on student exam scores. The metrics with the highest quantitative coefficients on exam scores were low access to resources and supportive environments. There is also a strong relationship between hours studied and the number of hours a student is in class. Therefore, both environmental and individual factors influence student success so both should be priotized for students aiming for As. Further, exam scores can be moderately accurately predicted by all metrics. This information could be very useful to university professors to understand if students are severely under or overperforming on their tests. Knowing this could also reflect the professors teaching ability and help them reflect on teaching changes they could want to make.
+
+
+

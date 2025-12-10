@@ -1,6 +1,6 @@
 ---
 title: "Predicting Exam Scores"
-format: html
+format: gfm
 ---
 
 

@@ -170,8 +170,8 @@ print(model.summary())
     Dep. Variable:             Exam_Score   R-squared:                       0.541
     Model:                            OLS   Adj. R-squared:                  0.541
     Method:                 Least Squares   F-statistic:                     3896.
-    Date:                Wed, 03 Dec 2025   Prob (F-statistic):               0.00
-    Time:                        11:54:34   Log-Likelihood:                -15776.
+    Date:                Wed, 10 Dec 2025   Prob (F-statistic):               0.00
+    Time:                        09:13:35   Log-Likelihood:                -15776.
     No. Observations:                6607   AIC:                         3.156e+04
     Df Residuals:                    6604   BIC:                         3.158e+04
     Df Model:                           2                                         
@@ -212,8 +212,8 @@ print(model.summary())
     Dep. Variable:             Exam_Score   R-squared:                       0.597
     Model:                            OLS   Adj. R-squared:                  0.596
     Method:                 Least Squares   F-statistic:                     1954.
-    Date:                Wed, 03 Dec 2025   Prob (F-statistic):               0.00
-    Time:                        11:54:34   Log-Likelihood:                -15350.
+    Date:                Wed, 10 Dec 2025   Prob (F-statistic):               0.00
+    Time:                        09:13:35   Log-Likelihood:                -15350.
     No. Observations:                6607   AIC:                         3.071e+04
     Df Residuals:                    6601   BIC:                         3.075e+04
     Df Model:                           5                                         
@@ -266,8 +266,8 @@ print(model.summary())
     Dep. Variable:             Exam_Score   R-squared:                       0.722
     Model:                            OLS   Adj. R-squared:                  0.720
     Method:                 Least Squares   F-statistic:                     609.8
-    Date:                Wed, 03 Dec 2025   Prob (F-statistic):               0.00
-    Time:                        11:54:34   Log-Likelihood:                -13675.
+    Date:                Wed, 10 Dec 2025   Prob (F-statistic):               0.00
+    Time:                        09:13:35   Log-Likelihood:                -13675.
     No. Observations:                6378   AIC:                         2.741e+04
     Df Residuals:                    6350   BIC:                         2.759e+04
     Df Model:                          27                                         
@@ -391,3 +391,19 @@ interesting to see how adding variables like previous experience in the
 subject or motivation impact scores. Motivation could be measured by:
 whether or not the student is trying to find a job, whether they plan on
 pursuing a career in that subject, etc.
+
+## Takeaways
+
+After performing both linear regression and predictive modeling, we can
+see that most variables available in the dataset have a significant
+effect on student exam scores. The metrics with the highest quantitative
+coefficients on exam scores were low access to resources and supportive
+environments. There is also a strong relationship between hours studied
+and the number of hours a student is in class. Therefore, both
+environmental and individual factors influence student success so both
+should be priotized for students aiming for As. Further, exam scores can
+be moderately accurately predicted by all metrics. This information
+could be very useful to university professors to understand if students
+are severely under or overperforming on their tests. Knowing this could
+also reflect the professors teaching ability and help them reflect on
+teaching changes they could want to make.
